@@ -10,9 +10,12 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className="background-glow glow-one"></div>
-      <div className="background-glow glow-two"></div>
-      <div className="background-glow glow-three"></div>
+      <div className="mesh mesh-1"></div>
+      <div className="mesh mesh-2"></div>
+      <div className="mesh mesh-3"></div>
+      <div className="floating-orb orb-1"></div>
+      <div className="floating-orb orb-2"></div>
+      <div className="floating-orb orb-3"></div>
 
       <main className="main-container">
         <Hero />

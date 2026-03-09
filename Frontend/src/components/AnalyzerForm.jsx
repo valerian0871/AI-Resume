@@ -31,28 +31,48 @@ function AnalyzerForm({ setResult, loading, setLoading }) {
 
   return (
     <section className="form-card">
-      <form onSubmit={handleSubmit} className="analyzer-form">
-        <div className="form-group">
-          <label>Upload Resume (PDF)</label>
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={(e) => setResumeFile(e.target.files[0])}
-          />
-        </div>
+      <div className="section-heading">
+        <h2>Start Your Analysis</h2>
+        <p>
+          Upload your resume and compare it against a target role in seconds.
+        </p>
+      </div>
 
-        <div className="form-group">
-          <label>Paste Job Description</label>
-          <textarea
-            rows="8"
-            placeholder="Paste the job description here..."
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-          />
+      <form onSubmit={handleSubmit} className="analyzer-form">
+        <div className="form-grid">
+          <div className="upload-panel">
+            <label className="upload-label">Upload Resume (PDF)</label>
+
+            <label className="upload-box">
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setResumeFile(e.target.files[0])}
+                hidden
+              />
+              <div className="upload-icon">↑</div>
+              <p className="upload-title">
+                {resumeFile ? resumeFile.name : "Drop your resume here or click to upload"}
+              </p>
+              <span className="upload-subtext">
+                PDF only • Optimized for ATS-style analysis
+              </span>
+            </label>
+          </div>
+
+          <div className="textarea-panel">
+            <label className="upload-label">Paste Job Description</label>
+            <textarea
+              rows="10"
+              placeholder="Paste the full job description here so the analyzer can compare skills, phrases, and section relevance..."
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+            />
+          </div>
         </div>
 
         <button type="submit" className="analyze-btn" disabled={loading}>
-          {loading ? "Analyzing..." : "Analyze Resume"}
+          {loading ? "Analyzing Resume..." : "Analyze Resume Now"}
         </button>
       </form>
     </section>
