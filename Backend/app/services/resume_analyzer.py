@@ -1,3 +1,57 @@
+def generate_tailored_resume_suggestions(
+    sections: dict,
+    missing_keywords: list,
+    missing_phrases: list,
+    matched_keywords: list,
+    matched_phrases: list
+) -> dict:
+    target_terms = matched_keywords + matched_phrases
+    missing_terms = missing_keywords + missing_phrases
+
+    improved_summary = (
+        "Results-driven professional with experience in "
+        + (", ".join(target_terms[:4]) if target_terms else "relevant technical and professional skills")
+        + ". Strong background in delivering impactful work, solving problems, and contributing to role-specific goals. "
+        + "Seeking to bring proven skills and adaptable experience into a position aligned with the target job requirements."
+    )
+
+    suggested_skills = sorted(set(target_terms[:6] + missing_terms[:6]))
+
+    bullet_point_improvements = []
+
+    if matched_keywords or matched_phrases:
+        bullet_point_improvements.append(
+            "Rewrite your experience bullets to show measurable impact using the most relevant job terms."
+        )
+
+    for term in missing_terms[:4]:
+        bullet_point_improvements.append(
+            f"If you genuinely have experience with {term}, add a bullet point showing how you used it in practice."
+        )
+
+    if not bullet_point_improvements:
+        bullet_point_improvements.append(
+            "Strengthen your work experience with clearer action verbs, tools used, and measurable outcomes."
+        )
+
+    project_suggestions = []
+    for term in missing_terms[:3]:
+        project_suggestions.append(
+            f"Consider adding a project or accomplishment that demonstrates {term}."
+        )
+
+    if not project_suggestions:
+        project_suggestions.append(
+            "Add a project section with relevant tools, technologies, and outcomes to strengthen alignment."
+        )
+
+    return {
+        "improved_summary": improved_summary,
+        "suggested_skills": suggested_skills,
+        "bullet_point_improvements": bullet_point_improvements,
+        "project_suggestions": project_suggestions
+    }
+
 import re
 
 STOPWORDS = {
@@ -304,9 +358,18 @@ def analyze_resume(resume_text: str, job_description: str) -> dict:
     combined_matched = sorted(set(matched_keywords + matched_phrases))
     combined_missing = sorted(set(missing_keywords + missing_phrases))
 
+    tailored_resume_suggestions = generate_tailored_resume_suggestions(
+        sections=sections,
+        missing_keywords=missing_keywords,
+        missing_phrases=missing_phrases,
+        matched_keywords=matched_keywords,
+        matched_phrases=matched_phrases
+    )
+
     return {
         "match_score": match_score,
         "matched_keywords": combined_matched,
         "missing_keywords": combined_missing,
-        "improvement_suggestions": improvement_suggestions
+        "improvement_suggestions": improvement_suggestions,
+        "tailored_resume_suggestions": tailored_resume_suggestions
     }
