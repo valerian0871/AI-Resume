@@ -4,8 +4,8 @@ function ResultsPanel({ result, loading }) {
       <section className="results-card loading-card">
         <h2>Analyzing your resume...</h2>
         <p>
-          We are comparing your resume against the job description and checking
-          keyword, phrase, and section alignment.
+          We are comparing your resume against the job description and generating
+          ATS-aware rewrite suggestions.
         </p>
         <div className="loading-shimmer"></div>
       </section>
@@ -18,11 +18,14 @@ function ResultsPanel({ result, loading }) {
         <h2>Your insights will appear here</h2>
         <p>
           Once you run an analysis, you’ll see your score, matched skills,
-          missing keywords, and tailored suggestions here.
+          missing keywords, rewrite help, and an optimized resume draft here.
         </p>
       </section>
     );
   }
+
+  const rewrite = result.tailored_resume_suggestions;
+  const draft = result.optimized_resume_draft;
 
   return (
     <section className="results-wrapper">
@@ -39,10 +42,10 @@ function ResultsPanel({ result, loading }) {
           <h3>Quick Insight</h3>
           <p>
             {result.match_score >= 75
-              ? "Strong alignment. Focus on polishing your achievements and impact."
+              ? "Strong alignment. Focus on polishing achievements and impact."
               : result.match_score >= 50
-              ? "Decent alignment. You have a good base, but some important terms are still missing."
-              : "Low alignment. Your resume needs stronger tailoring for this role."}
+              ? "Decent alignment. You have a good base, but important terms are still missing."
+              : "Low alignment. Your resume needs much stronger tailoring for this role."}
           </p>
         </div>
       </div>
@@ -86,6 +89,90 @@ function ResultsPanel({ result, loading }) {
                 {item}
               </div>
             ))}
+          </div>
+        </div>
+
+        <div className="result-list-card full-width rewrite-card">
+          <h3>Tailored Resume Rewrite</h3>
+
+          <div className="rewrite-block">
+            <h4>Improved Summary</h4>
+            <p>{rewrite.improved_summary}</p>
+          </div>
+
+          <div className="rewrite-block">
+            <h4>Suggested Skills</h4>
+            <div className="tag-list">
+              {rewrite.suggested_skills.map((item, index) => (
+                <span key={index} className="tag rewrite-tag">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="rewrite-block">
+            <h4>Bullet Point Improvements</h4>
+            <div className="suggestions-list">
+              {rewrite.bullet_point_improvements.map((item, index) => (
+                <div key={index} className="suggestion-item">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rewrite-block">
+            <h4>Project Suggestions</h4>
+            <div className="suggestions-list">
+              {rewrite.project_suggestions.map((item, index) => (
+                <div key={index} className="suggestion-item">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="result-list-card full-width optimized-draft-card">
+          <h3>Optimized Resume Draft</h3>
+
+          <div className="rewrite-block">
+            <h4>Professional Summary</h4>
+            <p>{draft.professional_summary}</p>
+          </div>
+
+          <div className="rewrite-block">
+            <h4>Key Skills</h4>
+            <div className="tag-list">
+              {draft.key_skills.map((item, index) => (
+                <span key={index} className="tag draft-tag">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="rewrite-block">
+            <h4>Experience Bullets</h4>
+            <div className="suggestions-list">
+              {draft.experience_bullets.map((item, index) => (
+                <div key={index} className="suggestion-item">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rewrite-block">
+            <h4>Project Bullets</h4>
+            <div className="suggestions-list">
+              {draft.project_bullets.map((item, index) => (
+                <div key={index} className="suggestion-item">
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

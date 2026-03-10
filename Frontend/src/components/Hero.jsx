@@ -5,7 +5,7 @@ function Hero() {
         <div className="badge">Smart ATS Resume Intelligence</div>
 
         <h1 className="hero-title">
-          Turn Your Resume Into a <span>Job-Matching Machine</span>
+          Turn Your Resume Into a <span>Job-Matching Resume</span>
         </h1>
 
         <p className="hero-text">
@@ -51,9 +51,9 @@ function Hero() {
 
           <div className="preview-tags">
             <span>Python</span>
-            <span>FastAPI</span>
+            <span>SEO</span>
             <span>React</span>
-            <span>REST API</span>
+            <span>Adobe</span>
           </div>
         </div>
       </div>

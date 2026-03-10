@@ -14,6 +14,7 @@ app.add_middleware(
 
 app.include_router(analyzer_router, prefix="/api")
 
+
 @app.get("/")
 def read_root():
     return {"message": "AI Resume Analyzer backend is running"}

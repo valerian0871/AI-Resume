@@ -12,3 +12,13 @@ export const analyzeResume = async (formData) => {
   });
   return response.data;
 };
+
+export const exportResumeDocx = async (formData) => {
+  const response = await API.post("/export-docx", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    responseType: "blob",
+  });
+  return response.data;
+};

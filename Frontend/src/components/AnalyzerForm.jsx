@@ -1,31 +1,69 @@
 import { useState } from "react";
-import { analyzeResume } from "../services/api";
+import { analyzeResume, exportResumeDocx } from "../services/api";
 
 function AnalyzerForm({ setResult, loading, setLoading }) {
   const [resumeFile, setResumeFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
+  const [exporting, setExporting] = useState(false);
+
+  const validateInputs = () => {
+    if (!resumeFile || !jobDescription.trim()) {
+      alert("Please upload a resume and paste a job description.");
+      return false;
+    }
+    return true;
+  };
+
+  const buildFormData = () => {
+    const formData = new FormData();
+    formData.append("resume", resumeFile);
+    formData.append("job_description", jobDescription);
+    return formData;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!resumeFile || !jobDescription.trim()) {
-      alert("Please upload a resume and paste a job description.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("resume", resumeFile);
-    formData.append("job_description", jobDescription);
+    if (!validateInputs()) return;
 
     try {
       setLoading(true);
-      const data = await analyzeResume(formData);
+      const data = await analyzeResume(buildFormData());
       setResult(data);
     } catch (error) {
       console.error(error);
       alert("Something went wrong while analyzing the resume.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportDocx = async () => {
+    if (!validateInputs()) return;
+
+    try {
+      setExporting(true);
+
+      const blob = await exportResumeDocx(buildFormData());
+      const url = window.URL.createObjectURL(
+        new Blob([blob], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        })
+      );
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "optimized_resume.docx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong while exporting the resume.");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -71,9 +109,20 @@ function AnalyzerForm({ setResult, loading, setLoading }) {
           </div>
         </div>
 
-        <button type="submit" className="analyze-btn" disabled={loading}>
-          {loading ? "Analyzing Resume..." : "Analyze Resume Now"}
-        </button>
+        <div className="form-actions">
+          <button type="submit" className="analyze-btn" disabled={loading}>
+            {loading ? "Analyzing Resume..." : "Analyze Resume Now"}
+          </button>
+
+          <button
+            type="button"
+            className="export-btn"
+            disabled={exporting || loading}
+            onClick={handleExportDocx}
+          >
+            {exporting ? "Exporting DOCX..." : "Download Optimized Resume"}
+          </button>
+        </div>
       </form>
     </section>
   );

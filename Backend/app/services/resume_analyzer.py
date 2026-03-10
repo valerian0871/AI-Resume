@@ -1,58 +1,8 @@
-def generate_tailored_resume_suggestions(
-    sections: dict,
-    missing_keywords: list,
-    missing_phrases: list,
-    matched_keywords: list,
-    matched_phrases: list
-) -> dict:
-    target_terms = matched_keywords + matched_phrases
-    missing_terms = missing_keywords + missing_phrases
-
-    improved_summary = (
-        "Results-driven professional with experience in "
-        + (", ".join(target_terms[:4]) if target_terms else "relevant technical and professional skills")
-        + ". Strong background in delivering impactful work, solving problems, and contributing to role-specific goals. "
-        + "Seeking to bring proven skills and adaptable experience into a position aligned with the target job requirements."
-    )
-
-    suggested_skills = sorted(set(target_terms[:6] + missing_terms[:6]))
-
-    bullet_point_improvements = []
-
-    if matched_keywords or matched_phrases:
-        bullet_point_improvements.append(
-            "Rewrite your experience bullets to show measurable impact using the most relevant job terms."
-        )
-
-    for term in missing_terms[:4]:
-        bullet_point_improvements.append(
-            f"If you genuinely have experience with {term}, add a bullet point showing how you used it in practice."
-        )
-
-    if not bullet_point_improvements:
-        bullet_point_improvements.append(
-            "Strengthen your work experience with clearer action verbs, tools used, and measurable outcomes."
-        )
-
-    project_suggestions = []
-    for term in missing_terms[:3]:
-        project_suggestions.append(
-            f"Consider adding a project or accomplishment that demonstrates {term}."
-        )
-
-    if not project_suggestions:
-        project_suggestions.append(
-            "Add a project section with relevant tools, technologies, and outcomes to strengthen alignment."
-        )
-
-    return {
-        "improved_summary": improved_summary,
-        "suggested_skills": suggested_skills,
-        "bullet_point_improvements": bullet_point_improvements,
-        "project_suggestions": project_suggestions
-    }
-
+import json
 import re
+from typing import Dict, List
+
+from openai import OpenAI
 
 STOPWORDS = {
     "a", "an", "and", "are", "as", "at", "be", "but", "by",
@@ -159,8 +109,8 @@ def split_resume_into_sections(resume_text: str) -> dict:
 
     for line in lines:
         lower_line = line.lower()
-
         matched_section = None
+
         for section_name, headings in SECTION_PATTERNS.items():
             if lower_line in headings:
                 matched_section = section_name
@@ -317,6 +267,140 @@ def generate_section_based_suggestions(
     return suggestions
 
 
+def generate_llm_resume_rewrite(
+    resume_text: str,
+    job_description: str,
+    matched_keywords: List[str],
+    missing_keywords: List[str],
+    improvement_suggestions: List[str],
+    match_score: int
+) -> Dict[str, List[str] | str]:
+    """
+    Uses an LLM to generate a stronger, job-tailored rewrite.
+    Falls back to a deterministic draft if the API fails.
+    """
+    client = OpenAI()
+
+    system_prompt = """
+You are an expert ATS resume strategist.
+
+Your job is to rewrite resume content so it becomes stronger, clearer, more job-targeted,
+and still honest. Do not invent fake employers, fake dates, fake degrees, or fake achievements.
+
+Return ONLY valid JSON with this exact structure:
+{
+  "improved_summary": "string",
+  "suggested_skills": ["string"],
+  "bullet_point_improvements": ["string"],
+  "project_suggestions": ["string"],
+  "professional_summary": "string",
+  "key_skills": ["string"],
+  "experience_bullets": ["string"],
+  "project_bullets": ["string"]
+}
+
+Rules:
+- Keep content concise, strong, and resume-friendly.
+- Make the summary sound modern and professional.
+- Skills should be ATS-relevant and role-specific.
+- Experience bullets should start with action verbs.
+- Project bullets should sound credible and useful.
+- Do not include markdown.
+- Do not include commentary outside the JSON.
+"""
+
+    user_prompt = f"""
+Resume text:
+{resume_text}
+
+Job description:
+{job_description}
+
+Match score:
+{match_score}
+
+Matched keywords:
+{matched_keywords}
+
+Missing keywords:
+{missing_keywords}
+
+Improvement suggestions:
+{improvement_suggestions}
+"""
+
+    try:
+        response = client.responses.create(
+            model="gpt-5.4",
+            input=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+        )
+
+        raw_text = response.output_text.strip()
+        parsed = json.loads(raw_text)
+
+        return {
+            "improved_summary": parsed.get("improved_summary", ""),
+            "suggested_skills": parsed.get("suggested_skills", []),
+            "bullet_point_improvements": parsed.get("bullet_point_improvements", []),
+            "project_suggestions": parsed.get("project_suggestions", []),
+            "professional_summary": parsed.get("professional_summary", ""),
+            "key_skills": parsed.get("key_skills", []),
+            "experience_bullets": parsed.get("experience_bullets", []),
+            "project_bullets": parsed.get("project_bullets", []),
+        }
+
+    except Exception:
+        fallback_terms = matched_keywords[:4] if matched_keywords else ["relevant technologies", "problem solving"]
+        fallback_missing = missing_keywords[:4]
+
+        improved_summary = (
+            "Results-driven professional with experience aligned to modern role requirements, "
+            f"including {', '.join(fallback_terms)}. Strong ability to contribute through execution, collaboration, and measurable outcomes."
+        )
+
+        suggested_skills = sorted(set(fallback_terms + fallback_missing))
+
+        bullet_point_improvements = [
+            "Rewrite your experience bullets using strong action verbs and measurable results.",
+            "Add role-specific tools and responsibilities where they truthfully reflect your work.",
+            "Show how your work created impact, improved efficiency, or delivered outcomes."
+        ]
+
+        project_suggestions = [
+            "Add a project that clearly demonstrates your strongest relevant technical skills.",
+            "Describe the tools used, the problem solved, and the outcome achieved."
+        ]
+
+        professional_summary = improved_summary
+
+        key_skills = suggested_skills
+
+        experience_bullets = [
+            f"Applied {fallback_terms[0]} to support technical and business goals in practical work settings.",
+            "Collaborated with teams to improve workflows, delivery quality, and problem resolution.",
+            "Delivered work with a focus on efficiency, clarity, and measurable outcomes."
+        ]
+
+        project_bullets = [
+            "Built a practical project aligned with the target role and documented the tools, approach, and final results.",
+            "Focused on demonstrating relevant technical ability through clear implementation and outcome-oriented delivery."
+        ]
+
+        return {
+            "improved_summary": improved_summary,
+            "suggested_skills": suggested_skills,
+            "bullet_point_improvements": bullet_point_improvements,
+            "project_suggestions": project_suggestions,
+            "professional_summary": professional_summary,
+            "key_skills": key_skills,
+            "experience_bullets": experience_bullets,
+            "project_bullets": project_bullets,
+        }
+
+
 def analyze_resume(resume_text: str, job_description: str) -> dict:
     normalized_resume = normalize_text(resume_text)
     normalized_job = normalize_text(job_description)
@@ -358,18 +442,34 @@ def analyze_resume(resume_text: str, job_description: str) -> dict:
     combined_matched = sorted(set(matched_keywords + matched_phrases))
     combined_missing = sorted(set(missing_keywords + missing_phrases))
 
-    tailored_resume_suggestions = generate_tailored_resume_suggestions(
-        sections=sections,
-        missing_keywords=missing_keywords,
-        missing_phrases=missing_phrases,
-        matched_keywords=matched_keywords,
-        matched_phrases=matched_phrases
+    llm_result = generate_llm_resume_rewrite(
+        resume_text=resume_text,
+        job_description=job_description,
+        matched_keywords=combined_matched,
+        missing_keywords=combined_missing,
+        improvement_suggestions=improvement_suggestions,
+        match_score=match_score
     )
+
+    tailored_resume_suggestions = {
+        "improved_summary": llm_result["improved_summary"],
+        "suggested_skills": llm_result["suggested_skills"],
+        "bullet_point_improvements": llm_result["bullet_point_improvements"],
+        "project_suggestions": llm_result["project_suggestions"],
+    }
+
+    optimized_resume_draft = {
+        "professional_summary": llm_result["professional_summary"],
+        "key_skills": llm_result["key_skills"],
+        "experience_bullets": llm_result["experience_bullets"],
+        "project_bullets": llm_result["project_bullets"],
+    }
 
     return {
         "match_score": match_score,
         "matched_keywords": combined_matched,
         "missing_keywords": combined_missing,
         "improvement_suggestions": improvement_suggestions,
-        "tailored_resume_suggestions": tailored_resume_suggestions
+        "tailored_resume_suggestions": tailored_resume_suggestions,
+        "optimized_resume_draft": optimized_resume_draft
     }
