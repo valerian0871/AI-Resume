@@ -148,7 +148,6 @@ body {
 .hero-title span {
   background: linear-gradient(90deg, #ff4bcf, #9875ff, #49e7ff);
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -436,6 +435,7 @@ body {
 .export-btn {
   background: linear-gradient(90deg, #00c896, #15d7b2, #46e8ff);
   box-shadow: 0 14px 35px rgba(0, 200, 150, 0.28);
+  white-space: nowrap;
 }
 
 .analyze-btn:hover,
@@ -629,6 +629,20 @@ body {
   background:
     linear-gradient(135deg, rgba(79, 114, 255, 0.1), rgba(0, 225, 255, 0.05)),
     rgba(14, 18, 38, 0.78);
+}
+
+.optimized-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.optimized-subtext {
+  color: #bfc8ea;
+  line-height: 1.7;
 }
 
 .rewrite-block {

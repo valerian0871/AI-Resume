@@ -7,6 +7,8 @@ import "./index.css";
 function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [resumeFile, setResumeFile] = useState(null);
+  const [jobDescription, setJobDescription] = useState("");
 
   return (
     <div className="app-shell">
@@ -23,8 +25,17 @@ function App() {
           setResult={setResult}
           loading={loading}
           setLoading={setLoading}
+          resumeFile={resumeFile}
+          setResumeFile={setResumeFile}
+          jobDescription={jobDescription}
+          setJobDescription={setJobDescription}
         />
-        <ResultsPanel result={result} loading={loading} />
+        <ResultsPanel
+          result={result}
+          loading={loading}
+          resumeFile={resumeFile}
+          jobDescription={jobDescription}
+        />
       </main>
     </div>
   );
