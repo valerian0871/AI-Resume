@@ -25,8 +25,8 @@ function App() {
 
       <main className="main-container">
         <header className="app-header">
-          <img src="/logo.svg" alt="AI Resume Pro Logo" className="app-logo" />
-          <span className="app-name">AI Resume Pro</span>
+          <img src="/logo.svg" alt="AI Resume Analyzer Logo" className="app-logo" />
+          <span className="app-name">AI Resume Analyzer</span>
         </header>
 
         <Hero />
