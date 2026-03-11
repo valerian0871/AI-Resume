@@ -20,6 +20,11 @@ function App() {
       <div className="floating-orb orb-3"></div>
 
       <main className="main-container">
+        <header className="app-header">
+          <img src="/logo.svg" alt="AI Resume Pro Logo" className="app-logo" />
+          <span className="app-name">AI Resume Pro</span>
+        </header>
+
         <Hero />
         <AnalyzerForm
           setResult={setResult}

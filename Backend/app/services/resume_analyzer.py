@@ -256,11 +256,7 @@ def fallback_llm_result(sections: dict, matched_keywords: List[str], missing_key
         "improved_summary": improved_summary,
         "suggested_skills": suggested_skills,
         "bullet_point_improvements": experience_bullets,
-        "project_suggestions": project_bullets,
-        "professional_summary": improved_summary,
-        "key_skills": suggested_skills,
-        "experience_bullets": experience_bullets,
-        "project_bullets": project_bullets
+        "project_suggestions": project_bullets
     }
 
 
@@ -306,11 +302,7 @@ Return ONLY valid JSON with this exact structure:
   "improved_summary": "string",
   "suggested_skills": ["string"],
   "bullet_point_improvements": ["string"],
-  "project_suggestions": ["string"],
-  "professional_summary": "string",
-  "key_skills": ["string"],
-  "experience_bullets": ["string"],
-  "project_bullets": ["string"]
+  "project_suggestions": ["string"]
 }
 """
 
@@ -373,11 +365,7 @@ Keep the rewrite faithful to the original resume. Improve wording, clarity, and 
             "improved_summary": parsed.get("improved_summary", ""),
             "suggested_skills": parsed.get("suggested_skills", []),
             "bullet_point_improvements": parsed.get("bullet_point_improvements", []),
-            "project_suggestions": parsed.get("project_suggestions", []),
-            "professional_summary": parsed.get("professional_summary", ""),
-            "key_skills": parsed.get("key_skills", []),
-            "experience_bullets": parsed.get("experience_bullets", []),
-            "project_bullets": parsed.get("project_bullets", []),
+            "project_suggestions": parsed.get("project_suggestions", [])
         }
 
     except Exception as e:
@@ -443,18 +431,10 @@ def analyze_resume(resume_text: str, job_description: str) -> dict:
         "project_suggestions": llm_result["project_suggestions"],
     }
 
-    optimized_resume_draft = {
-        "professional_summary": llm_result["professional_summary"],
-        "key_skills": llm_result["key_skills"],
-        "experience_bullets": llm_result["experience_bullets"],
-        "project_bullets": llm_result["project_bullets"],
-    }
-
     return {
         "match_score": match_score,
         "matched_keywords": combined_matched,
         "missing_keywords": combined_missing,
         "improvement_suggestions": improvement_suggestions,
-        "tailored_resume_suggestions": tailored_resume_suggestions,
-        "optimized_resume_draft": optimized_resume_draft
+        "tailored_resume_suggestions": tailored_resume_suggestions
     }

@@ -8,4 +8,3 @@ class AnalysisResponse(BaseModel):
     missing_keywords: List[str]
     improvement_suggestions: List[str]
     tailored_resume_suggestions: Dict[str, Union[List[str], str]]
-    optimized_resume_draft: Dict[str, Union[List[str], str]]

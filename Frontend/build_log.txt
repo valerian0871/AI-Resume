@@ -1,0 +1,38 @@
+
+> frontend@0.0.0 build
+> tsc -b && vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 22 modules transformed.
+✗ Build failed in 2.10s
+error during build:
+[vite:esbuild] Transform failed with 2 errors:
+C:/Users/user/OneDrive/Documents/AI Resume/Frontend/src/components/ResultsPanel.jsx:137:6: ERROR: Unexpected closing "section" tag does not match opening "div" tag
+C:/Users/user/OneDrive/Documents/AI Resume/Frontend/src/components/ResultsPanel.jsx:141:28: ERROR: Unexpected end of file before a closing "section" tag
+file: C:/Users/user/OneDrive/Documents/AI Resume/Frontend/src/components/ResultsPanel.jsx:137:6
+
+Unexpected closing "section" tag does not match opening "div" tag
+135 |            </div>
+136 |        </div>
+137 |      </section>
+    |        ^
+138 |    );
+139 |  }
+
+Unexpected end of file before a closing "section" tag
+139 |  }
+140 |  
+141 |  export default ResultsPanel;
+    |                              ^
+
+    at failureErrorWithLog (C:\Users\user\OneDrive\Documents\AI Resume\Frontend\node_modules\esbuild\lib\main.js:1467:15)
+    at C:\Users\user\OneDrive\Documents\AI Resume\Frontend\node_modules\esbuild\lib\main.js:736:50
+    at responseCallbacks.<computed> (C:\Users\user\OneDrive\Documents\AI Resume\Frontend\node_modules\esbuild\lib\main.js:603:9)
+    at handleIncomingPacket (C:\Users\user\OneDrive\Documents\AI Resume\Frontend\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (C:\Users\user\OneDrive\Documents\AI Resume\Frontend\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)

@@ -1,46 +1,6 @@
-import { useState } from "react";
-import { exportResumeDocx } from "../services/api";
+
 
 function ResultsPanel({ result, loading, resumeFile, jobDescription }) {
-  const [exporting, setExporting] = useState(false);
-
-  const handleExportDocx = async () => {
-    if (!resumeFile || !jobDescription.trim()) {
-      alert("Please upload a resume and paste a job description first.");
-      return;
-    }
-
-    try {
-      setExporting(true);
-
-      const formData = new FormData();
-      formData.append("resume", resumeFile);
-      formData.append("job_description", jobDescription);
-
-      const blob = await exportResumeDocx(formData);
-
-      const url = window.URL.createObjectURL(
-        new Blob([blob], {
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        })
-      );
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "optimized_resume.docx");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong while exporting the resume.");
-    } finally {
-      setExporting(false);
-    }
-  };
-
   if (loading) {
     return (
       <section className="results-card loading-card">
@@ -67,7 +27,6 @@ function ResultsPanel({ result, loading, resumeFile, jobDescription }) {
   }
 
   const rewrite = result.tailored_resume_suggestions;
-  const draft = result.optimized_resume_draft;
 
   return (
     <section className="results-wrapper">
@@ -168,64 +127,6 @@ function ResultsPanel({ result, loading, resumeFile, jobDescription }) {
             <h4>Project Suggestions</h4>
             <div className="suggestions-list">
               {rewrite.project_suggestions.map((item, index) => (
-                <div key={index} className="suggestion-item">
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="result-list-card full-width optimized-draft-card">
-          <div className="optimized-header">
-            <div>
-              <h3>Optimized Resume Draft</h3>
-              <p className="optimized-subtext">
-                Review the improved draft below, then download it as a DOCX file.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="export-btn"
-              disabled={exporting}
-              onClick={handleExportDocx}
-            >
-              {exporting ? "Exporting DOCX..." : "Download Optimized Resume"}
-            </button>
-          </div>
-
-          <div className="rewrite-block">
-            <h4>Professional Summary</h4>
-            <p>{draft.professional_summary}</p>
-          </div>
-
-          <div className="rewrite-block">
-            <h4>Key Skills</h4>
-            <div className="tag-list">
-              {draft.key_skills.map((item, index) => (
-                <span key={index} className="tag draft-tag">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="rewrite-block">
-            <h4>Experience Bullets</h4>
-            <div className="suggestions-list">
-              {draft.experience_bullets.map((item, index) => (
-                <div key={index} className="suggestion-item">
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rewrite-block">
-            <h4>Project Bullets</h4>
-            <div className="suggestions-list">
-              {draft.project_bullets.map((item, index) => (
                 <div key={index} className="suggestion-item">
                   {item}
                 </div>
