@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: "https://ai-resume-analyzer-h4f1.onrender.com",
 });
 
 export const analyzeResume = async (formData) => {
@@ -12,4 +12,4 @@ export const analyzeResume = async (formData) => {
   });
   return response.data;
 };
-
+
