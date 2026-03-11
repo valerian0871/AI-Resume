@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://ai-resume-analyzer-h4f1.onrender.com",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 export const analyzeResume = async (formData) => {
